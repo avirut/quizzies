@@ -8,6 +8,6 @@
 </script>
 
 <svelte:head>
-	<title>Quizzies</title>
+	<title>quizzies!</title>
 	<meta name="description" content="Quizzies" />
 </svelte:head>
