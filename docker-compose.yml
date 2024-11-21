@@ -1,6 +1,6 @@
 services:
   quizzies:
-    image: avirut/quizzies:latest
+    image: ghcr.io/avirut/quizzies:master
     container_name: quizzies
     restart: unless-stopped
     volumes:
