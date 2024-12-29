@@ -5,7 +5,7 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 	import * as Select from '$lib/components/ui/select/index.js';
 	import { Switch } from '$lib/components/ui/switch/index.js';
-    
+
 	import { settings } from '$lib/stores/settings';
 
 	const themes = [
@@ -34,8 +34,7 @@
 				<Switch
 					id="show-text"
 					checked={$settings.showText}
-					onchange={(e: Event & { currentTarget: HTMLInputElement }) =>
-						settings.update((s) => ({ ...s, showText: e.currentTarget.checked }))}
+					onCheckedChange={(checked) => settings.update((s) => ({ ...s, showText: checked }))}
 				/>
 			</div>
 
@@ -44,8 +43,7 @@
 				<Switch
 					id="sound-enabled"
 					checked={$settings.soundEnabled}
-					onchange={(e: Event & { currentTarget: HTMLInputElement }) =>
-						settings.update((s) => ({ ...s, soundEnabled: e.currentTarget.checked }))}
+					onCheckedChange={(checked) => settings.update((s) => ({ ...s, soundEnabled: checked }))}
 				/>
 			</div>
 
@@ -55,7 +53,7 @@
 					type="single"
 					value={$settings.theme}
 					onValueChange={(value) => {
-						setMode(value as ('dark' | 'light' | 'system'));
+						setMode(value as 'dark' | 'light' | 'system');
 						settings.update((s) => ({ ...s, theme: value }));
 					}}
 				>
