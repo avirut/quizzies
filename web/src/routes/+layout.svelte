@@ -1,6 +1,7 @@
 <script lang="ts">
-	import Header from './Header.svelte';
+	import Header from '$lib/components/Header.svelte';
 	import '../app.css';
+	import { ModeWatcher } from 'mode-watcher';
 
 	let { children } = $props();
 </script>
@@ -10,6 +11,7 @@
 </svelte:head>
 
 <div class="app">
+	<ModeWatcher />
 	<Header />
 
 	<main>
@@ -18,7 +20,7 @@
 
 	<footer>
 		<p>
-			Created by <a href="https://github.com/avirut">avirut</a>
+			Created by <a href="https://github.com/avirut">avirut</a>, based on <a href="https://www.qbreader.org/database/">QBReader</a>
 		</p>
 	</footer>
 </div>

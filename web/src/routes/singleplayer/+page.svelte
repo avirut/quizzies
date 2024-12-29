@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ActionData, PageData } from './$types';
-	import TossupPlayer from '$lib/components/TossupPlayer.svelte';
+	import TossupPlayer from '$lib/components/TossupPlayerNew.svelte';
 	import type { Tossup } from '$lib/types';
     import { difficultyMap } from '$lib/types';
 	import { onMount } from 'svelte';
