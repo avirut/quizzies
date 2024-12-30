@@ -1,3 +1,18 @@
+export interface Set {
+    id: string;
+    name: string | null;
+    year: number | null;
+    difficulty: number | null;
+    standard: boolean | null;
+}
+
+export interface Packet {
+    id: string;
+    name: string | null;
+    number: number | null;
+    setId: string | null;
+}
+
 export interface Tossup {
     id: string;
     category: string | null;
@@ -17,9 +32,10 @@ export interface Tossup {
 
     qbrCreated: number | null;
     qbrUpdated: number | null;
+    rerunMarker: number | null;
 }
 
-export const difficultyMap = {
+export const difficultyMap: Record<number, string> = {
     0: "Trash",
     1: "Middle School",
     2: "Easy High School",

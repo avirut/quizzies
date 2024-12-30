@@ -8,50 +8,22 @@
 
 <svelte:head>
 	<title>quizzies!</title>
+	<meta name="description" content="Quizzies" />
 </svelte:head>
 
-<div class="app">
+<div class="flex min-h-screen flex-col">
 	<ModeWatcher />
 	<Header />
 
-	<main>
+	<main class="flex flex-1 flex-col p-4 mx-auto w-full max-w-4xl box-border">
 		{@render children()}
 	</main>
 
-	<footer>
-		<p>
-			Created by <a href="https://github.com/avirut">avirut</a>, based on <a href="https://www.qbreader.org/database/">QBReader</a>
+	<footer class="flex flex-col items-center justify-center p-3">
+		<p class="hidden md:block text-center text-sm text-muted-foreground">
+			Created by <a href="https://github.com/avirut" class="font-bold hover:underline">avirut</a>
+			{' '}using{' '}
+			<a href="https://www.qbreader.org/database/" class="font-bold hover:underline">QBReader</a> questions
 		</p>
 	</footer>
 </div>
-
-<style>
-	.app {
-		display: flex;
-		flex-direction: column;
-		min-height: 100vh;
-	}
-
-	main {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		padding: 1rem;
-		width: 100%;
-		max-width: 64rem;
-		margin: 0 auto;
-		box-sizing: border-box;
-	}
-
-	footer {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		padding: 12px;
-	}
-
-	footer a {
-		font-weight: bold;
-	}
-</style>
