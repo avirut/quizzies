@@ -2,14 +2,10 @@ import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
 
 interface Settings {
-    showText: boolean,
-    soundEnabled: boolean;
     theme: string
 }
 
 const defaultSettings: Settings = {
-    showText: true,
-    soundEnabled: true,
     theme: 'system',
 };
 

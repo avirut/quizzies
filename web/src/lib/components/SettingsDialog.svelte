@@ -30,24 +30,6 @@
 		</Dialog.Header>
 		<div class="space-y-6 py-6">
 			<div class="flex items-center justify-between">
-				<Label for="show-text" class="text-right">Show question text</Label>
-				<Switch
-					id="show-text"
-					checked={$settings.showText}
-					onCheckedChange={(checked) => settings.update((s) => ({ ...s, showText: checked }))}
-				/>
-			</div>
-
-			<div class="flex items-center justify-between">
-				<Label for="sound-enabled" class="text-right">Play question audio</Label>
-				<Switch
-					id="sound-enabled"
-					checked={$settings.soundEnabled}
-					onCheckedChange={(checked) => settings.update((s) => ({ ...s, soundEnabled: checked }))}
-				/>
-			</div>
-
-			<div class="flex items-center justify-between">
 				<Label for="theme-select" class="text-right">Theme</Label>
 				<Select.Root
 					type="single"
