@@ -1,10 +1,11 @@
 // filters.ts
-import { writable } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
 import { browser } from '$app/environment';
 
 interface Filters {
     difficulties: number[],
-    categories: string[]
+    categories: string[],
+    availableTossups: number | null  // Add this
 }
 
 export const DIFFICULTIES = [1, 2, 3, 4, 5];
@@ -25,7 +26,8 @@ export const CATEGORIES = [
 
 const defaultFilters: Filters = {
     difficulties: DIFFICULTIES,
-    categories: CATEGORIES
+    categories: CATEGORIES,
+    availableTossups: null
 };
 
 // Load from localStorage if available
@@ -35,9 +37,10 @@ const initialFilters = browser
 
 export const filters = writable<Filters>(initialFilters);
 
-// Persist to localStorage when changed
+// Persist to localStorage when changed (but don't save availableTossups)
 if (browser) {
     filters.subscribe(value => {
-        localStorage.setItem('quizzies-filters', JSON.stringify(value));
+        const { availableTossups, ...persistedValues } = value;
+        localStorage.setItem('quizzies-filters', JSON.stringify(persistedValues));
     });
 }

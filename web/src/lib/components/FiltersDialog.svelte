@@ -48,7 +48,16 @@
 	</Dialog.Trigger>
 	<Dialog.Content class="max-h-[80vh] overflow-y-auto">
 		<Dialog.Header>
-			<Dialog.Title>Filters</Dialog.Title>
+			<Dialog.Title class="flex items-center justify-between">
+				<span>Filters</span>
+				<span class="text-sm text-muted-foreground">
+					{#if $filters.availableTossups === null}
+						Loading...
+					{:else}
+						{$filters.availableTossups.toLocaleString()} tossups available
+					{/if}
+				</span>
+			</Dialog.Title>
 		</Dialog.Header>
 		<div class="space-y-6">
 			<div class="space-y-4">

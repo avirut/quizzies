@@ -4,29 +4,33 @@
 	import type { Tossup } from '$lib/types';
 	import { filters } from '$lib/stores/filters';
 	import { enhance } from '$app/forms';
+	import { onMount } from 'svelte';
 
 	let { form } = $props<{ form: ActionData }>();
-	let formEl = $state<HTMLFormElement | null>(null);
+	let getTossupForm = $state<HTMLFormElement | null>(null);
+	let getTossupCountForm = $state<HTMLFormElement | null>(null);
 
-	// Reactive form data using derived state
 	let formData = $derived({
 		difficulties: $filters.difficulties,
 		categories: $filters.categories
 	});
 
-	// Submit form on mount
 	$effect(() => {
-		formEl?.requestSubmit();
+		getTossupCountForm?.requestSubmit();
+	});
+
+	onMount(() => {
+		getTossupForm?.requestSubmit();
 	});
 
 	function onNext() {
-		formEl?.requestSubmit();
+		getTossupForm?.requestSubmit();
 	}
 </script>
 
 <div class="mx-auto w-full max-w-4xl p-4">
 	<form 
-		bind:this={formEl}
+		bind:this={getTossupForm}
 		id="tossupForm" 
 		method="POST" 
 		action="?/getTossup" 
@@ -37,6 +41,23 @@
 		}}
 	>
 	</form>
+
+	<form 
+		bind:this={getTossupCountForm}
+		method="POST" 
+		action="?/getTossupCount"
+		use:enhance={({ formData: fd }) => {
+			fd.append('difficulties', JSON.stringify(formData.difficulties));
+			fd.append('categories', JSON.stringify(formData.categories));
+			return async ({ result }) => {
+				if (result.type === 'success') {
+					filters.update(f => ({ ...f, availableTossups: (result.data?.count as number || null)}));
+				}
+			};
+		}}
+	>
+	</form>
+
 	{#if form}
 		<div class="w-full">
 			<TossupPlayer tossup={form as Tossup} {onNext} />
