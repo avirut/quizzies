@@ -6,7 +6,6 @@
 	import { enhance } from '$app/forms';
 
 	let { form } = $props<{ form: ActionData }>();
-
 	let formEl = $state<HTMLFormElement | null>(null);
 
 	// Reactive form data using derived state
@@ -25,30 +24,24 @@
 	}
 </script>
 
-<div class="container">
+<div class="mx-auto w-full max-w-4xl p-4">
 	<form 
 		bind:this={formEl}
 		id="tossupForm" 
 		method="POST" 
 		action="?/getTossup" 
+		class="w-full"
 		use:enhance={({ formData: fd }) => {
-			// Add filter values to form submission
 			fd.append('difficulties', JSON.stringify(formData.difficulties));
 			fd.append('categories', JSON.stringify(formData.categories));
 		}}
 	>
 	</form>
 	{#if form}
-		<TossupPlayer tossup={form as Tossup} {onNext} />
+		<div class="w-full">
+			<TossupPlayer tossup={form as Tossup} {onNext} />
+		</div>
 	{:else}
-		<p>No tossups found.</p>
+		<p class="text-center text-muted-foreground">No tossups found.</p>
 	{/if}
 </div>
-
-<style>
-	.container {
-		max-width: 800px;
-		margin: 0 auto;
-		padding: 1rem;
-	}
-</style>
