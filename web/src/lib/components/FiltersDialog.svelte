@@ -1,4 +1,3 @@
-<!-- FiltersDialog.svelte -->
 <script lang="ts">
 	import { Filter } from 'lucide-svelte';
 	import * as Dialog from '$lib/components/ui/dialog/index.js';
@@ -9,35 +8,19 @@
 	import { difficultyMap } from '$lib/types';
 
 	function toggleDifficulty(difficulty: number) {
-		filters.update(f => {
-			if (f.difficulties.includes(difficulty)) {
-				return {
-					...f,
-					difficulties: f.difficulties.filter(d => d !== difficulty)
-				};
-			} else {
-				return {
-					...f,
-					difficulties: [...f.difficulties, difficulty].sort()
-				};
-			}
-		});
+		const newDifficulties = $filters.difficulties.includes(difficulty)
+			? $filters.difficulties.filter((d) => d !== difficulty)
+			: [...$filters.difficulties, difficulty].sort();
+
+		filters.updateFilters(newDifficulties, $filters.categories);
 	}
 
 	function toggleCategory(category: string) {
-		filters.update(f => {
-			if (f.categories.includes(category)) {
-				return {
-					...f,
-					categories: f.categories.filter(c => c !== category)
-				};
-			} else {
-				return {
-					...f,
-					categories: [...f.categories, category].sort()
-				};
-			}
-		});
+		const newCategories = $filters.categories.includes(category)
+			? $filters.categories.filter((c) => c !== category)
+			: [...$filters.categories, category].sort();
+
+		filters.updateFilters($filters.difficulties, newCategories);
 	}
 </script>
 
@@ -48,16 +31,16 @@
 	</Dialog.Trigger>
 	<Dialog.Content class="max-h-[80vh] overflow-y-auto">
 		<Dialog.Header>
-			<Dialog.Title class="flex items-center justify-between">
-				<span>Filters</span>
-				<span class="text-sm text-muted-foreground">
-					{#if $filters.availableTossups === null}
-						Loading...
-					{:else}
-						{$filters.availableTossups.toLocaleString()} tossups available
-					{/if}
-				</span>
-			</Dialog.Title>
+			<Dialog.Title>Filters</Dialog.Title>
+			<p class="text-muted-foreground mt-2 text-sm">
+				{#if $filters.availableTossups === null}
+					Loading...
+				{:else if typeof $filters.availableTossups === 'number'}
+					{$filters.availableTossups.toLocaleString()} tossups available
+				{:else}
+					Error loading count
+				{/if}
+			</p>
 		</Dialog.Header>
 		<div class="space-y-6">
 			<div class="space-y-4">

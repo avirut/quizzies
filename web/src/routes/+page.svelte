@@ -8,15 +8,10 @@
 
 	let { form } = $props<{ form: ActionData }>();
 	let getTossupForm = $state<HTMLFormElement | null>(null);
-	let getTossupCountForm = $state<HTMLFormElement | null>(null);
 
 	let formData = $derived({
 		difficulties: $filters.difficulties,
 		categories: $filters.categories
-	});
-
-	$effect(() => {
-		getTossupCountForm?.requestSubmit();
 	});
 
 	onMount(() => {
@@ -38,22 +33,6 @@
 		use:enhance={({ formData: fd }) => {
 			fd.append('difficulties', JSON.stringify(formData.difficulties));
 			fd.append('categories', JSON.stringify(formData.categories));
-		}}
-	>
-	</form>
-
-	<form 
-		bind:this={getTossupCountForm}
-		method="POST" 
-		action="?/getTossupCount"
-		use:enhance={({ formData: fd }) => {
-			fd.append('difficulties', JSON.stringify(formData.difficulties));
-			fd.append('categories', JSON.stringify(formData.categories));
-			return async ({ result }) => {
-				if (result.type === 'success') {
-					filters.update(f => ({ ...f, availableTossups: (result.data?.count as number || null)}));
-				}
-			};
 		}}
 	>
 	</form>
