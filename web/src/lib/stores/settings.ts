@@ -2,11 +2,13 @@ import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
 
 interface Settings {
-    theme: string
+    theme: string,
+    autoplayNext: boolean
 }
 
 const defaultSettings: Settings = {
     theme: 'system',
+    autoplayNext: true
 };
 
 // Load from localStorage if available

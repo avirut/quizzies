@@ -53,6 +53,17 @@
 					</Select.Content>
 				</Select.Root>
 			</div>
+
+			<div class="flex items-center justify-between">
+				<Label for="autoplay-next" class="text-right">Autoplay on next</Label>
+				<Switch
+					id="autoplay-next"
+					checked={$settings.autoplayNext}
+					onCheckedChange={(checked) => {
+						settings.update((s) => ({ ...s, autoplayNext: checked }));
+					}}
+				/>
+			</div>
 		</div>
 	</Dialog.Content>
 </Dialog.Root>

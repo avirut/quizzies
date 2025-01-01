@@ -60,3 +60,84 @@ export const flyAndScale = (
 		easing: cubicOut
 	};
 };
+
+// lib/components/player/utils.ts
+import type { TimerCallback, TimerCompleteCallback } from './types';
+
+export function createAudioUrl(audio: Uint8Array | null): string {
+	if (!audio) return '';
+	const blob = new Blob([audio], { type: 'audio/mpeg' });
+	return URL.createObjectURL(blob);
+}
+
+export function startTimer(
+	duration: number,
+	onProgress: TimerCallback,
+	onComplete?: TimerCompleteCallback
+): ReturnType<typeof setInterval> {
+	const startTime = Date.now();
+	const interval = setInterval(() => {
+		const elapsed = Date.now() - startTime;
+		const progress = Math.min(elapsed / (duration * 1000), 1);
+		onProgress(progress);
+
+		if (progress >= 1) {
+			clearInterval(interval);
+			if (onComplete) onComplete();
+		}
+	}, 50);
+
+	return interval;
+}
+
+export function parseQuestion(question: string | null): string[] {
+	try {
+		return JSON.parse(question || '[]');
+	} catch {
+		return [];
+	}
+}
+
+export function parseTimings(timings: string | null): number[] {
+	try {
+		return JSON.parse(timings || '[]');
+	} catch {
+		return [];
+	}
+}
+
+export function formatVisibleText(
+	words: string[], 
+	currentIndex: number, 
+	powerMark: number | null
+): string {
+	return words
+		.slice(0, currentIndex)
+		.map((word, index) => (
+			index <= (powerMark || 0) ? 
+			`<strong>${word}</strong>` : 
+			word
+		))
+		.join(' ');
+}
+
+export function cleanupAudio(url: string): void {
+	if (url) {
+		URL.revokeObjectURL(url);
+	}
+}
+
+export function updateWordProgress(
+	currentTime: number,
+	wordTimings: number[],
+	currentIndex: number
+): number {
+	let newIndex = currentIndex;
+	while (
+		newIndex < wordTimings.length &&
+		wordTimings[newIndex] <= currentTime
+	) {
+		newIndex++;
+	}
+	return newIndex;
+}

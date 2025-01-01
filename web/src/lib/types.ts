@@ -48,3 +48,31 @@ export const difficultyMap: Record<number, string> = {
     9: "Nationals College",
     10: "Open"
 };
+
+export interface PlayerProps {
+    tossup: Tossup;
+    onNext: () => void;
+}
+
+export interface PlayerState {
+    currentWordIndex: number;
+    status: 'initial' | 'reading' | 'complete' | 'buzzedOrExpired' | 'revealed';
+    isPlaying: boolean;
+    audioUrl: string;
+    words: string[];
+    wordTimings: number[];
+    buzzTimerProgress: number;
+    endTimerProgress: number;
+}
+
+export interface TimerState {
+    progressInterval?: ReturnType<typeof setInterval>;
+    timerInterval?: ReturnType<typeof setInterval>;
+}
+
+export type TimerCallback = (progress: number) => void;
+export type TimerCompleteCallback = () => void;
+
+export interface AudioElementRef extends HTMLAudioElement {
+    currentTime: number;
+}
