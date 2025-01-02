@@ -80,7 +80,7 @@
         scrollRequired?.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
 
-	function togglePlayPause(): void {
+	export function togglePlayPause(): void {
 		if (playerState.isPlaying) {
 			audioElement.pause();
 			clearInterval(timerState.progressInterval);

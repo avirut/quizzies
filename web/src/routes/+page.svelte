@@ -5,11 +5,14 @@
 	import { filters } from '$lib/stores/filters';
 	import { applyAction, enhance } from '$app/forms';
 	import { onMount } from 'svelte';
+	import { settings } from '$lib/stores/settings';
 
 	let { form } = $props<{ form: ActionData }>();
 	let getTossupForm = $state<HTMLFormElement | null>(null);
 	let tossupQueue = $state<Tossup[]>([]);
 	let currentTossup = $state<Tossup | null>(null);
+
+	let tossupPlayer: any = $state(null);
 
 	const QUEUE_SIZE = 5;
 
@@ -27,6 +30,9 @@
 	function onNext() {
 		currentTossup = tossupQueue.shift() || null;
 		getTossupForm?.requestSubmit();
+		if ($settings.autoplayNext) {
+			setTimeout(tossupPlayer?.togglePlayPause, 100);
+		}
 	}
 </script>
 
@@ -57,7 +63,7 @@
 
 	{#if currentTossup}
 		<div class="mx-auto w-full max-w-4xl pt-4 md:pt-0">
-			<TossupPlayer tossup={currentTossup} {onNext} />
+			<TossupPlayer tossup={currentTossup} {onNext} bind:this={tossupPlayer} />
 		</div>
 	{:else}
 		<p class="text-muted-foreground text-center">No tossups found.</p>
