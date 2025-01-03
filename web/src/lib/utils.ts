@@ -141,3 +141,23 @@ export function updateWordProgress(
 	}
 	return newIndex;
 }
+
+export async function fetchTossup(difficulties: number[], categories: string[]) {
+	const response = await fetch('/api/getTossup', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			difficulties: difficulties,
+			categories: categories
+		})
+	});
+
+	if (!response.ok) {
+		throw new Error('Failed to fetch tossup');
+	}
+
+	const newTossup = await response.json();
+	return newTossup;
+}

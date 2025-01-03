@@ -28,7 +28,7 @@ export interface Tossup {
     answer: string | null;
     powerMark: number | null;
 
-    audio: Uint8Array | null;
+    audio: any | null;
 
     qbrCreated: number | null;
     qbrUpdated: number | null;
@@ -48,11 +48,6 @@ export const difficultyMap: Record<number, string> = {
     9: "Nationals College",
     10: "Open"
 };
-
-export interface PlayerProps {
-    tossup: Tossup;
-    onNext: () => void;
-}
 
 export interface PlayerState {
     currentWordIndex: number;
