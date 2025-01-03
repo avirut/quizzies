@@ -1,6 +1,7 @@
 // filters.ts
 import { writable, derived } from 'svelte/store';
 import { browser } from '$app/environment';
+import { fetchTossupCount } from '$lib/utils';
 
 interface Filters {
     difficulties: number[],
@@ -47,26 +48,10 @@ function createFiltersStore() {
             ...f,
             difficulties: newDifficulties ?? f.difficulties,
             categories: newCategories ?? f.categories,
-            // availableTossups: null // Reset count while loading
         }));
 
-        // Then fetch the new count if we're in the browser
-        if (browser) {
-            const form = new FormData();
-            form.append('difficulties', JSON.stringify(newDifficulties ?? initialFilters.difficulties));
-            form.append('categories', JSON.stringify(newCategories ?? initialFilters.categories));
-
-            try {
-                const response = await fetch('?/getTossupCount', {
-                    method: 'POST',
-                    body: form
-                });
-                const data = await response.json();
-                update(f => ({ ...f, availableTossups: JSON.parse(data.data)[1] }));
-            } catch (error) {
-                console.error('Error updating tossup count:', error);
-                update(f => ({ ...f, availableTossups: null }));
-            }
+        if (newDifficulties && newCategories) {
+            fetchTossupCount(newDifficulties, newCategories).then(count => update(f => ({ ...f, availableTossups: count })));
         }
     }
 

@@ -62,7 +62,7 @@ export const flyAndScale = (
 };
 
 // lib/components/player/utils.ts
-import type { TimerCallback, TimerCompleteCallback } from './types';
+import type { TimerCallback, TimerCompleteCallback, Tossup } from './types';
 
 export function createAudioUrl(audio: Uint8Array | null): string {
 	if (!audio) return '';
@@ -142,7 +142,7 @@ export function updateWordProgress(
 	return newIndex;
 }
 
-export async function fetchTossup(difficulties: number[], categories: string[]) {
+export async function fetchTossup(difficulties: number[], categories: string[]): Promise<Tossup> {
 	const response = await fetch('/api/getTossup', {
 		method: 'POST',
 		headers: {
@@ -158,6 +158,26 @@ export async function fetchTossup(difficulties: number[], categories: string[]) 
 		throw new Error('Failed to fetch tossup');
 	}
 
-	const newTossup = await response.json();
+	const newTossup = await response.json() as Tossup;
 	return newTossup;
+}
+
+export async function fetchTossupCount(difficulties: number[], categories: string[]): Promise<number> {
+	const response = await fetch('/api/getTossupCount', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			difficulties: difficulties,
+			categories: categories
+		})
+	});
+
+	if (!response.ok) {
+		throw new Error('Failed to fetch tossup');
+	}
+
+	const answer = await response.json();
+	return answer.count as number;
 }
