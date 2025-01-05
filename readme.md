@@ -1,5 +1,7 @@
 # Quizzies
 
+![Quizzies screenshot](https://raw.githubusercontent.com/avirut/quizzies/refs/heads/master/screenshot.jpeg)
+
 A modern web-based quiz bowl reader with audio functionality, designed to run NAQT questions from the [QBReader database](https://www.qbreader.org/database/).
 
 Also see:
