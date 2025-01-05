@@ -14,7 +14,7 @@ Also see:
 - Accompanying text with power marking
 - Difficulty & category filters
 
-## Tech stack
+## Stack
 
 - Web app: SvelteKit with shadcn-svelte components
 - Database: SQLite with Drizzle ORM
