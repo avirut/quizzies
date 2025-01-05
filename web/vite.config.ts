@@ -16,5 +16,9 @@ export default defineConfig({
 				'node_modules/@libsql/linux-x64-musl/**/*.node'
 			]
 		}
+	},
+	// below three lines for development in code-server only
+	server: {
+		host: "127.0.0.1"
 	}
 });

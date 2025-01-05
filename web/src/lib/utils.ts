@@ -2,6 +2,8 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { cubicOut } from "svelte/easing";
 import type { TransitionConfig } from "svelte/transition";
+import { page } from '$app/stores';
+import { get } from 'svelte/store';
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -143,7 +145,7 @@ export function updateWordProgress(
 }
 
 export async function fetchTossup(difficulties: number[], categories: string[]): Promise<Tossup> {
-	const response = await fetch('/api/getTossup', {
+	const response = await fetch(window.location.href + '/api/getTossup', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'
@@ -163,7 +165,7 @@ export async function fetchTossup(difficulties: number[], categories: string[]):
 }
 
 export async function fetchTossupCount(difficulties: number[], categories: string[]): Promise<number> {
-	const response = await fetch('/api/getTossupCount', {
+	const response = await fetch(window.location.href + '/api/getTossupCount', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'
