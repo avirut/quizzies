@@ -36,8 +36,8 @@
 		status: 'initial',
 		isPlaying: false,
 		audioUrl: '',
-		words: [] as string[],
-		wordTimings: [] as number[],
+		words: [],
+		wordTimings: [],
 		buzzTimerProgress: 0,
 		endTimerProgress: 0
 	});
@@ -56,60 +56,98 @@
 	onMount(() => {
 		refreshQueue();
 
-		filters.subscribe((value) => {
-			clearQueue();
+		const unsubscribe = filters.subscribe(() => {
+			clearState();
 			refreshQueue();
 		});
+
+		return () => unsubscribe();
 	});
 
 	onDestroy(() => {
-		cleanupAudio(playerState.audioUrl);
-		clearInterval(timerState.timerInterval);
-		clearInterval(timerState.progressInterval);
+		clearState();
 	});
 
+	function clearState() {
+		cleanupAudio(playerState.audioUrl);
+		clearTimers();
+		clearQueue();
+	}
+
+	function clearTimers() {
+		if (timerState.timerInterval) {
+			clearInterval(timerState.timerInterval);
+			timerState.timerInterval = undefined;
+		}
+		if (timerState.progressInterval) {
+			clearInterval(timerState.progressInterval);
+			timerState.progressInterval = undefined;
+		}
+	}
+
 	function setupTossup(newTossup: Tossup) {
+		if (!newTossup) return;
+
+		cleanupAudio(playerState.audioUrl);
 		tossup = newTossup;
 		playerState.audioUrl = createAudioUrl(new Uint8Array(tossup?.audio?.data || null));
 		playerState.words = parseQuestion(tossup?.question || null);
 		playerState.wordTimings = parseTimings(tossup?.wordTiming || null);
+		playerState.currentWordIndex = 0;
+		playerState.status = 'initial';
 	}
 
 	function clearQueue() {
 		tossupQueue = [];
 	}
 
-	function refreshQueue() {
-		let needed = QUEUE_SIZE - tossupQueue.length + (tossup ? 0 : 1);
+	async function refreshQueue() {
+		const needed = QUEUE_SIZE - tossupQueue.length + (tossup ? 0 : 1);
 
 		for (let i = 0; i < needed; i++) {
-			fetchTossup($filters.difficulties, $filters.categories).then((newTossup) => {
+			try {
+				const newTossup = await fetchTossup($filters.difficulties, $filters.categories);
+				if (!newTossup) continue;
+
 				if (!tossup) {
 					setupTossup(newTossup);
 				} else {
-					tossupQueue.push(newTossup);
+					tossupQueue = [...tossupQueue, newTossup];
 				}
-			});
+			} catch (error) {
+				console.error('Failed to fetch tossup:', error);
+			}
 		}
 	}
 
 	function scrollToBottom(): void {
-		scrollRequired?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+		if (!scrollRequired) return;
+		scrollRequired.scrollIntoView({ behavior: 'smooth', block: 'end' });
 	}
 
 	function togglePlayPause(): void {
+		if (!audioElement) return;
+
 		if (playerState.isPlaying) {
 			audioElement.pause();
 			clearInterval(timerState.progressInterval);
+			playerState.isPlaying = false;
 		} else {
 			audioElement.play();
 			startProgressTracking();
+			playerState.isPlaying = true;
+			if (playerState.status === 'initial') {
+				playerState.status = 'reading';
+			}
 		}
-		playerState.isPlaying = !playerState.isPlaying;
 	}
 
 	function startProgressTracking(): void {
+		if (timerState.progressInterval) clearInterval(timerState.progressInterval);
+
 		timerState.progressInterval = setInterval(() => {
+			if (!audioElement) return;
+
 			playerState.currentWordIndex = updateWordProgress(
 				audioElement.currentTime,
 				playerState.wordTimings,
@@ -123,58 +161,79 @@
 
 	function handleAudioEnd(): void {
 		playerState.isPlaying = false;
+		playerState.status = 'complete';
 		clearInterval(timerState.progressInterval);
+
+		if (timerState.timerInterval) clearInterval(timerState.timerInterval);
+
 		timerState.timerInterval = startTimer(
 			5,
 			(progress) => (playerState.endTimerProgress = progress),
 			() => {
-				if (playerState.status != 'revealed') playerState.status = 'buzzedOrExpired';
+				if (playerState.status !== 'revealed') {
+					playerState.status = 'buzzedOrExpired';
+				}
 			}
 		);
 	}
 
 	function handleNext(): void {
-		audioElement.pause();
-		playerState = {
-			...playerState,
-			isPlaying: false,
-			currentWordIndex: 0,
-			status: 'initial',
-			buzzTimerProgress: 0,
-			endTimerProgress: 0
-		};
-		clearInterval(timerState.progressInterval);
-
-		if (tossupQueue.length > 0) {
-			setupTossup(tossupQueue.shift() as Tossup);
-			refreshQueue();
-
-			if ($settings.autoplayNext) {
-				setTimeout(togglePlayPause, 100);
-			}
-		} else {
+		if (!tossupQueue.length) {
 			console.error('Tossup queue is empty.');
+			refreshQueue();
+			return;
+		}
+
+		clearTimers();
+		if (audioElement) audioElement.pause();
+
+		playerState.isPlaying = false;
+		playerState.currentWordIndex = 0;
+		playerState.status = 'initial';
+		playerState.buzzTimerProgress = 0;
+		playerState.endTimerProgress = 0;
+
+		setupTossup(tossupQueue.shift() as Tossup);
+		refreshQueue();
+
+		if ($settings.autoplayNext) {
+			setTimeout(togglePlayPause, 100);
 		}
 	}
 
 	function handleBuzzReveal(): void {
-		if (
-			playerState.status == 'initial' ||
-			playerState.status == 'reading' ||
-			playerState.status == 'complete'
-		) {
-			audioElement.pause();
+		if (['initial', 'reading', 'complete'].includes(playerState.status)) {
+			if (audioElement) audioElement.pause();
 			playerState.isPlaying = false;
 			clearInterval(timerState.progressInterval);
 			playerState.status = 'buzzedOrExpired';
+
+			if (timerState.timerInterval) clearInterval(timerState.timerInterval);
+
 			timerState.timerInterval = startTimer(
 				10,
 				(progress) => (playerState.buzzTimerProgress = progress)
 			);
-		} else if (playerState.status == 'buzzedOrExpired') {
+		} else if (playerState.status === 'buzzedOrExpired') {
 			playerState.status = 'revealed';
+			clearTimers();
 			setTimeout(scrollToBottom, 50);
-			clearInterval(timerState.timerInterval);
+		} else if (playerState.status === 'revealed') {
+			// Return to pre-buzz state based on question progress
+			clearTimers();
+			playerState.buzzTimerProgress = 0;
+			playerState.endTimerProgress = 0;
+
+			// If we're at the end of the question, return to 'complete'
+			// Otherwise, return to 'reading' state
+			playerState.status =
+				playerState.currentWordIndex >= playerState.words.length ? 'complete' : 'reading';
+
+			if (playerState.status === 'reading' && audioElement) {
+				// Reset audio to current word timing if we're mid-question
+				const currentWordTiming = playerState.wordTimings[playerState.currentWordIndex] || 0;
+				audioElement.currentTime = currentWordTiming;
+			}
 		}
 	}
 </script>
@@ -262,16 +321,17 @@
 				</Button.Root>
 
 				<Button.Root
-					variant={playerState.status == 'revealed' ? 'secondary' : 'destructive'}
+					variant={playerState.status === 'revealed' ? 'secondary' : 'destructive'}
 					onclick={handleBuzzReveal}
-					disabled={playerState.status == 'revealed'}
 					class="h-12 flex-1 text-base font-medium sm:h-14 sm:text-lg"
 				>
-					{playerState.status == 'revealed'
-						? 'Revealed'
-						: playerState.status == 'buzzedOrExpired'
-							? 'Reveal'
-							: 'Buzz'}
+					{#if playerState.status === 'revealed'}
+						Unreveal
+					{:else if playerState.status === 'buzzedOrExpired'}
+						Reveal
+					{:else}
+						Buzz
+					{/if}
 				</Button.Root>
 
 				<Button.Root
