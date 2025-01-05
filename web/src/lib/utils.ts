@@ -145,8 +145,7 @@ export function updateWordProgress(
 }
 
 export async function fetchTossup(difficulties: number[], categories: string[]): Promise<Tossup> {
-	const url = new URL('/api/getTossupCount', window.location.href);
-	const response = await fetch(url.toString(), {
+	const response = await fetch('/api/getTossup', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'
@@ -166,8 +165,7 @@ export async function fetchTossup(difficulties: number[], categories: string[]):
 }
 
 export async function fetchTossupCount(difficulties: number[], categories: string[]): Promise<number> {
-	const url = new URL('/api/getTossupCount', window.location.href);
-	const response = await fetch(url.toString(), {
+	const response = await fetch('/api/getTossupCount', {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'
