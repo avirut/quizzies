@@ -18,7 +18,7 @@ export default defineConfig({
 		}
 	},
 	// below three lines for development in code-server only
-	server: {
-		host: "127.0.0.1"
-	}
+	// server: {
+		// host: "127.0.0.1"
+	// }
 });

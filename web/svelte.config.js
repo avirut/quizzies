@@ -11,7 +11,7 @@ const config = {
 			checkOrigin: false
 		},
 		// below line for development in code-server only
-		paths: { base: "/absproxy/5173", relative: true }
+		// paths: { base: "/absproxy/5173", relative: true }
 	}
 };
 
