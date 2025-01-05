@@ -1,0 +1,18 @@
+{
+    "short_name": "quizzies!",
+    "name": "quizzies!",
+    "start_url": "/",
+    "icons": [
+      {
+        "src": "quizzies.png",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ],
+    "background_color": "#0a0a0a",
+    "display": "standalone",
+    "scope": "/",
+    "theme_color": "#262626",
+    "shortcuts": [],
+    "description": "Run quiz bowl tossups with audio prompting"
+}
